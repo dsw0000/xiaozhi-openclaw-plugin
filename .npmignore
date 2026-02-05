@@ -1,0 +1,23 @@
+# Source files (only distribute compiled JS)
+src/
+test/
+*.ts
+*.test.ts
+!dist/**/*.d.ts
+
+# Development files
+tsconfig.json
+vitest.config.ts
+
+# Documentation (keep README and LICENSE)
+!README.md
+!LICENSE
+
+# CI/CD
+.github/
+
+# Logs
+*.log
+
+# Dependencies
+node_modules/
