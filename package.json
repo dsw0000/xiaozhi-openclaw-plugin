@@ -1,5 +1,5 @@
 {
-  "name": "@openclaw/xiaozhi",
+  "name": "@dsw0000/xiaozhi",
   "version": "1.0.0",
   "description": "Xiaozhi (小智) ESP32 integration plugin for OpenClaw - WebSocket client for xiaozhi-esp32-server",
   "type": "module",
@@ -15,7 +15,11 @@
     "dev": "tsc --watch",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
-    "prepublishOnly": "pnpm build"
+    "prepublishOnly": "pnpm build",
+    "release": "pnpm build && npm publish",
+    "release:patch": "npm version patch && pnpm release",
+    "release:minor": "npm version minor && pnpm release",
+    "release:major": "npm version major && pnpm release"
   },
   "keywords": [
     "openclaw",
@@ -31,18 +35,19 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/xiaozhi-openclaw-plugin.git"
+    "url": "https://github.com/dsw0000/xiaozhi-openclaw-plugin.git"
   },
-  "homepage": "https://github.com/openclaw/xiaozhi-openclaw-plugin#readme",
+  "homepage": "https://github.com/dsw0000/xiaozhi-openclaw-plugin#readme",
   "bugs": {
-    "url": "https://github.com/openclaw/xiaozhi-openclaw-plugin/issues"
+    "url": "https://github.com/dsw0000/xiaozhi-openclaw-plugin/issues"
   },
   "peerDependencies": {
     "openclaw": ">=2026.2.0"
   },
   "dependencies": {
     "ws": "^8.18.0",
-    "zod": "^4.3.6"
+    "zod": "^4.3.6",
+    "@sinclair/typebox": "^0.33.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

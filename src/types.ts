@@ -56,7 +56,7 @@ export interface ClientEvents {
   connect: () => void;
   disconnect: (code: number, reason: string) => void;
   error: (error: Error) => void;
-  message: (message: JsonRpcResponse) => void;
+  message: (message: JsonRpcRequest | JsonRpcResponse) => void;
   reconnect: (attempt: number) => void;
   reconnectFailed: () => void;
 }

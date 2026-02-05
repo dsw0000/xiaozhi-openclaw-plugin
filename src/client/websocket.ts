@@ -228,8 +228,8 @@ export class XiaozhiWebSocketClient {
       const response = parsed as JsonRpcResponse;
       this.handleResponse(response);
     } else {
-      // Handle unsolicited server messages
-      this.emit("message", parsed as JsonRpcResponse);
+      // Handle unsolicited server messages (notifications or requests)
+      this.emit("message", parsed);
     }
   }
 
