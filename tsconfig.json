@@ -23,6 +23,9 @@
     "node_modules",
     "dist",
     "test",
-    "**/*.test.ts"
+    "**/*.test.ts",
+    "src/channel.ts",
+    "src/monitor.ts",
+    "src/accounts.ts"
   ]
 }

@@ -92,6 +92,17 @@
           "advanced": true
         }
       }
+    },
+    "channel": {
+      "id": "xiaozhi",
+      "label": "Xiaozhi",
+      "selectionLabel": "Xiaozhi (小智)",
+      "blurb": "Xiaozhi ESP32 devices with voice, messaging, and IoT control",
+      "order": 80,
+      "aliases": [
+        "xiaozhi",
+        "小智"
+      ]
     }
   }
 }

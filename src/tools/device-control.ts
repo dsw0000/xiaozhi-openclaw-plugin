@@ -32,6 +32,19 @@ export const xiaozhiDeviceControlTool = (
     ),
   }),
   async execute(_id: string, params: Record<string, unknown>) {
+    // Check connection status before executing
+    if (!client.isConnected()) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: "xiaozhi 服务器当前未连接。请检查服务器是否运行，或等待自动重连。",
+          },
+        ],
+        isError: true,
+      };
+    }
+
     const deviceId = params.deviceId as string;
     const action = params.action as "turn_on" | "turn_off" | "toggle" | "set_value";
     const value = params.value as number | undefined;

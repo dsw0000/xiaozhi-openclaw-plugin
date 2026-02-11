@@ -28,6 +28,7 @@ let runtimeState: PluginRuntimeState = {
  */
 function loadConfig(api: OpenClawPluginApi): XiaozhiPluginConfigInput {
   // Merge default config with plugin config
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const rawConfig = {
     ...DEFAULT_CONFIG,
     ...(api.pluginConfig ?? {}),
@@ -48,15 +49,9 @@ function loadConfig(api: OpenClawPluginApi): XiaozhiPluginConfigInput {
 }
 
 /**
- * Initialize the WebSocket client and connect
+ * Set up event handlers for the WebSocket client
  */
-async function initializeClient(
-  api: OpenClawPluginApi,
-): Promise<XiaozhiWebSocketClient> {
-  const config = loadConfig(api);
-  const client = new WebSocketClientImpl(config);
-
-  // Set up event handlers
+function setupClientEventHandlers(client: XiaozhiWebSocketClient, api: OpenClawPluginApi): void {
   client.on("connect", () => {
     api.logger.info("xiaozhi-openclaw: Connected to server");
     runtimeState.isConnected = true;
@@ -78,18 +73,39 @@ async function initializeClient(
 
   client.on("reconnectFailed", () => {
     api.logger.error("xiaozhi-openclaw: Reconnection failed, max attempts reached");
+    api.logger.info("xiaozhi-openclaw: Will continue trying to reconnect...");
   });
+}
 
-  // Connect to server
-  runtimeState.isConnecting = true;
-  api.logger.info(`xiaozhi-openclaw: Connecting to ${config.serverUrl}`);
-  await client.connect();
+/**
+ * Start connection in the background (non-blocking)
+ */
+function connectInBackground(client: XiaozhiWebSocketClient, api: OpenClawPluginApi): void {
+  const config = loadConfig(api);
+  api.logger.info(`xiaozhi-openclaw: Connecting to ${config.serverUrl} in background`);
+
+  client.connect().catch((error) => {
+    api.logger.warn(`xiaozhi-openclaw: Initial connection failed: ${error.message}`);
+    api.logger.info("xiaozhi-openclaw: Will continue retrying in background");
+  });
+}
+
+/**
+ * Initialize the WebSocket client (without connecting)
+ */
+function initializeClient(api: OpenClawPluginApi): XiaozhiWebSocketClient {
+  const config = loadConfig(api);
+  const client = new WebSocketClientImpl(config);
+
+  // Set up event handlers
+  setupClientEventHandlers(client, api);
 
   return client;
 }
 
 /**
  * Start the plugin (called during plugin activation)
+ * Now non-blocking: plugin starts successfully even if server is unavailable
  */
 export async function startPlugin(api: OpenClawPluginApi): Promise<void> {
   if (runtimeState.client) {
@@ -98,19 +114,22 @@ export async function startPlugin(api: OpenClawPluginApi): Promise<void> {
   }
 
   try {
-    // Initialize and connect WebSocket client
-    const client = await initializeClient(api);
+    // Create client immediately, but don't wait for connection
+    const client = initializeClient(api);
     runtimeState.client = client;
 
-    // Register tools
+    // Register tools (tools will check connection status before executing)
     registerXiaozhiTools(client, api);
     api.logger.info("xiaozhi-openclaw: Tools registered");
 
-    api.logger.info("xiaozhi-openclaw: Plugin started successfully");
+    // Start connection in background (non-blocking)
+    connectInBackground(client, api);
+
+    api.logger.info("xiaozhi-openclaw: Plugin started (connecting in background)");
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     api.logger.error(`xiaozhi-openclaw: Failed to start: ${message}`);
-    throw error;
+    // Don't re-throw error - allow plugin to start even if connection fails
   }
 }
 

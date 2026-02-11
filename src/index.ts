@@ -2,7 +2,7 @@
  * xiaozhi-openclaw plugin
  * OpenClaw plugin for xiaozhi (小智) ESP32 server integration
  *
- * This plugin provides three tools for interacting with xiaozhi:
+ * This plugin provides tools for interacting with xiaozhi:
  * - xiaozhi_send_message: Send messages to configured channels
  * - xiaozhi_device_control: Control IoT devices
  * - xiaozhi_agent_task: Execute/query agent tasks
@@ -79,9 +79,9 @@ export default function register(api: import("openclaw/plugin-sdk").OpenClawPlug
     await stopPlugin(api);
   });
 
-  // Also start immediately if gateway is already running
+  // Also start immediately (non-blocking)
   startPlugin(api).catch((error) => {
-    api.logger.error(`xiaozhi-openclaw: Failed to start: ${error.message}`);
+    api.logger.warn(`xiaozhi-openclaw: Initial start warning: ${error.message}`);
   });
 }
 

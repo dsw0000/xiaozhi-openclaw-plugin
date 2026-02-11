@@ -2,6 +2,11 @@
  * Shared types for xiaozhi-openclaw plugin
  */
 
+// Forward declare to avoid circular import
+export interface XiaozhiWebSocketClientLike {
+  isConnected(): boolean;
+}
+
 // JSON-RPC 2.0 Request
 export interface JsonRpcRequest {
   jsonrpc: "2.0";
@@ -61,7 +66,7 @@ export interface ClientEvents {
   reconnectFailed: () => void;
 }
 
-// Plugin configuration
+// Plugin configuration (for tool plugin mode)
 export interface XiaozhiPluginConfig {
   serverUrl: string;
   authToken?: string;
@@ -69,4 +74,40 @@ export interface XiaozhiPluginConfig {
   maxReconnectAttempts?: number;
   heartbeatInterval?: number;
   connectionTimeout?: number;
+}
+
+// Channel configuration (for channel plugin mode)
+export interface XiaozhiConfig {
+  serverUrl: string;
+  authToken?: string;
+  reconnectInterval?: number;
+  maxReconnectAttempts?: number;
+  heartbeatInterval?: number;
+  connectionTimeout?: number;
+  enabled?: boolean;
+  dm?: {
+    policy?: string;
+    allowFrom?: string[];
+  };
+}
+
+// Resolved xiaozhi account (for channel plugin)
+export interface ResolvedXiaozhiAccount {
+  accountId: string;
+  name?: string;
+  enabled?: boolean;
+  configured: boolean;
+  serverUrl: string;
+  authToken?: string;
+  config: XiaozhiConfig;
+}
+
+// Xiaozhi runtime state (for channel plugin)
+export interface XiaozhiRuntimeState {
+  accountId: string;
+  running: boolean;
+  lastStartAt: number | null;
+  lastStopAt: number | null;
+  lastError: string | null;
+  client?: XiaozhiWebSocketClientLike | null;
 }
